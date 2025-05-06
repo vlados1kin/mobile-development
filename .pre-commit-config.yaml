@@ -1,0 +1,27 @@
+repos:
+  - repo: local
+    hooks:
+#      - id: dart-doc
+#        name: Generate Dart documentation
+#        entry: dart doc --output doc/api
+#        language: system
+#        pass_filenames: false
+#        types: [ dart ]
+
+      - id: import-sort
+        name: Sort Dart imports
+        entry: ./run_dart.sh run import_sorter:main
+        language: system
+        types: [dart]
+
+      - id: dart-format
+        name: Format Dart files
+        entry: ./run_dart.sh format .
+        language: system
+        types: [dart]
+
+      - id: dart-analyze
+        name: Dart Analyze
+        entry: ./run_flutter.sh analyze
+        language: system
+        types: [dart]
