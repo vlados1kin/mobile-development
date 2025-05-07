@@ -1,4 +1,3 @@
-// Flutter imports:
 import 'package:flutter/material.dart';
 
 /// Виджет элемента разделителя списка из настроек
@@ -8,13 +7,27 @@ class ListDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 16, bottom: 16),
-      width: double.infinity,
-      height: 2,
-      decoration: BoxDecoration(
-        color: const Color(0xB0CED7E5),
-        borderRadius: BorderRadius.circular(2),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        height: 1,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isDark
+                ? [
+              Colors.white.withOpacity(0.05),
+              Colors.white.withOpacity(0.02),
+            ]
+                : [
+              Colors.black.withOpacity(0.05),
+              Colors.black.withOpacity(0.02),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
       ),
     );
   }

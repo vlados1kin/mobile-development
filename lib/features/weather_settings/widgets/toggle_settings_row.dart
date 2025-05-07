@@ -1,4 +1,3 @@
-// Flutter imports:
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -33,48 +32,64 @@ class ToggleSettingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final defaultStyle = Theme.of(context).extension<ToggleSettingsRowStyle>()!;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
+    final defaultStyle = theme.extension<ToggleSettingsRowStyle>()!;
     final borderRadius = style?.borderRadius ?? defaultStyle.borderRadius;
-    final borderWidth = style?.borderWidth ?? defaultStyle.borderWidth;
-    final color = style?.color ?? defaultStyle.color;
-    final selectedColor = style?.selectedColor ?? defaultStyle.selectedColor;
-    final fillColor = style?.fillColor ?? defaultStyle.fillColor;
-    final borderColor = style?.borderColor ?? defaultStyle.borderColor;
-    final selectedBorderColor =
-        style?.selectedBorderColor ?? defaultStyle.selectedBorderColor;
+    final selectedColor = style?.selectedColor ?? theme.colorScheme.onPrimary;
+    final unselectedColor = style?.color ?? theme.colorScheme.onSurface;
+    final backgroundColor = style?.fillColor ??
+        (isDark ? Colors.white10 : Colors.grey.shade200);
+    final selectedBackgroundColor =
+    theme.colorScheme.primary.withOpacity(isDark ? 0.3 : 0.1);
 
-    final textTheme = Theme.of(context).textTheme;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: textTheme.bodyMedium),
-        ToggleButtons(
-          isSelected: List.generate(options.length, (i) => i == selectedIndex),
-          onPressed: onChanged,
-          borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
-          borderWidth: borderWidth,
-          selectedColor: selectedColor,
-          fillColor: fillColor,
-          color: color,
-          borderColor: borderColor,
-          selectedBorderColor: selectedBorderColor,
-          children:
-              options
-                  .map(
-                    (unit) => SizedBox(
-                      height: 20,
-                      width: 200 / options.length,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(unit),
+        Text(
+          title,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+          child: Row(
+            children: List.generate(options.length, (i) {
+              final isSelected = i == selectedIndex;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => onChanged(i),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? selectedBackgroundColor
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(borderRadius),
+                    ),
+                    child: Center(
+                      child: Text(
+                        options[i],
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color:
+                          isSelected ? selectedColor : unselectedColor,
+                          fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w400,
                         ),
                       ),
                     ),
-                  )
-                  .toList(),
+                  ),
+                ),
+              );
+            }),
+          ),
         ),
       ],
     );

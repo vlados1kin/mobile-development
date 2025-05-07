@@ -34,3 +34,8 @@ class WeatherSettingsScreenStyle
     );
   }
 }
+
+
+// const WeatherSettingsScreen({super.key, this.style});
+//
+// final WeatherSettingsScreenStyle? style;

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 /// Кастомное расширение темы для переключателя настроек
 class ToggleSettingsRowStyle extends ThemeExtension<ToggleSettingsRowStyle> {
   /// Конструктор
-  ToggleSettingsRowStyle({
+  const ToggleSettingsRowStyle({
     required this.borderRadius,
     required this.borderWidth,
     required this.color,
@@ -17,13 +17,13 @@ class ToggleSettingsRowStyle extends ThemeExtension<ToggleSettingsRowStyle> {
     required this.selectedBorderColor,
   });
 
-  /// Радиус закруления элемента
+  /// Радиус закругления элемента
   final double borderRadius;
 
   /// Толщина границ элемента
   final double borderWidth;
 
-  /// Цвет элемента
+  /// Цвет текста элемента
   final Color color;
 
   /// Цвет текста выбранного элемента
@@ -61,9 +61,9 @@ class ToggleSettingsRowStyle extends ThemeExtension<ToggleSettingsRowStyle> {
 
   @override
   ToggleSettingsRowStyle lerp(
-    covariant ThemeExtension<ToggleSettingsRowStyle>? other,
-    double t,
-  ) {
+      covariant ThemeExtension<ToggleSettingsRowStyle>? other,
+      double t,
+      ) {
     if (other is! ToggleSettingsRowStyle) return this;
 
     return ToggleSettingsRowStyle(
@@ -74,7 +74,7 @@ class ToggleSettingsRowStyle extends ThemeExtension<ToggleSettingsRowStyle> {
       fillColor: Color.lerp(fillColor, other.fillColor, t)!,
       borderColor: Color.lerp(borderColor, other.borderColor, t)!,
       selectedBorderColor:
-          Color.lerp(selectedBorderColor, other.selectedBorderColor, t)!,
+      Color.lerp(selectedBorderColor, other.selectedBorderColor, t)!,
     );
   }
 }
