@@ -286,7 +286,7 @@ class WeatherProvider extends ChangeNotifier {
         ),
         PollutionData(
           element: 'PM10',
-          description: 'Крупный твёрдые частицы',
+          description: 'Крупные твёрдые частицы',
           value: weather.current.airQuality.pm10!,
           level: Level.getPM10Level(weather.current.airQuality.pm10!),
         ),

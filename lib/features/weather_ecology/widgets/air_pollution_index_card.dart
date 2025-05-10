@@ -1,94 +1,99 @@
-// Flutter imports:
+import 'dart:ui';
 import 'package:flutter/material.dart';
-
-// Project imports:
 import 'package:weather_app/features/weather_ecology/data/data.dart';
-import 'package:weather_app/features/weather_ecology/styles/air_pollution_index_card_style.dart';
-import 'package:weather_app/features/weather_ecology/widgets/widgets.dart';
 
-/// Виджет карточки индекса загрязнения воздуха.
+/// Виджет карточки индекса загрязнения воздуха в стиле glassmorphism,
+/// где фон меняется в зависимости от качества воздуха.
 class AirPollutionIndexCard extends StatelessWidget {
-  /// Конструктор карточки.
   const AirPollutionIndexCard({
     required this.value,
     required this.valueIndex,
-    this.style,
     super.key,
   });
 
-  /// Значение индекса.
   final int value;
-
-  /// Индекс уровня загрязнения (от 1 до 5).
   final int valueIndex;
 
-  /// Стилизация карточки (необязательно).
-  final AirPollutionIndexCardStyle? style;
-
-  /// Построение виджета карточки.
   @override
   Widget build(BuildContext context) {
-    final defaultStyle =
-        Theme.of(context).extension<AirPollutionIndexCardStyle>()!;
+    final theme   = Theme.of(context);
+    final cs      = theme.colorScheme;
+    final radius  = 20.0;
+    final padding = const EdgeInsets.all(16);
 
-    final borderRadius = style?.borderRadius ?? defaultStyle.borderRadius;
-    final padding = style?.padding ?? defaultStyle.padding;
-    final backgroundColor =
-        style?.backgroundColor ?? defaultStyle.backgroundColor;
-    final textColor = style?.textColor ?? defaultStyle.textColor;
-
-    final textTheme = Theme.of(context).textTheme;
-
+    // Описание и базовый цвет в зависимости от уровня
     String description;
-    Emotion emotion;
-
+    Color baseColor;
     switch (valueIndex) {
       case 1:
-        description = 'Очень чистый\nвоздух';
-        emotion = Emotion.veryHappy;
+        description = 'Очень чистый воздух';
+        baseColor = const Color(0xFF66B44F);
+        break;
       case 2:
-        description = 'Чистый\nвоздух';
-        emotion = Emotion.happy;
+        description = 'Чистый воздух';
+        baseColor = const Color(0xFFAAC810);
+        break;
       case 3:
-        description = 'Нормальный\nвоздух';
-        emotion = Emotion.calm;
+        description = 'Нормальный воздух';
+        baseColor = const Color(0xFFFAD000);
+        break;
       case 4:
-        description = 'Грязный\nвоздух';
-        emotion = Emotion.sad;
+        description = 'Грязный воздух';
+        baseColor = const Color(0xFFEF7E1E);
+        break;
       case 5:
-        description = 'Очень грязный\nвоздух';
-        emotion = Emotion.verySad;
+        description = 'Очень грязный воздух';
+        baseColor = const Color(0xFFC6344E);
+        break;
       default:
-        description = 'Очень чистый\nвоздух';
-        emotion = Emotion.veryHappy;
+        description = 'Очень чистый воздух';
+        baseColor = const Color(0xFF66B44F);
     }
 
-    return Container(
-      height: 100,
-      padding: padding,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
-        color: backgroundColor,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '$value',
-            style: textTheme.displaySmall?.copyWith(color: textColor),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          width: double.infinity,
+          padding: padding,
+          decoration: BoxDecoration(
+            // glass background tinted by baseColor
+            color: baseColor.withOpacity(0.25),
+            borderRadius: BorderRadius.circular(radius),
+            border: Border.all(color: baseColor.withOpacity(0.3)),
+            boxShadow: [
+              BoxShadow(
+                color: theme.shadowColor.withOpacity(0.05),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
-          Text(
-            description,
-            style: textTheme.labelMedium?.copyWith(
-              color: textColor.withValues(alpha: 0.7),
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Индекс $value',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: cs.onSurface,
+                  fontWeight: FontWeight.normal,
+                  letterSpacing: -1,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                description,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: cs.onSurface.withOpacity(0.85),
+                  fontWeight: FontWeight.w600,
+                  height: 1.3,
+                ),
+              ),
+            ],
           ),
-          SizedBox(
-            width: 150,
-            height: double.infinity,
-            child: EmojiCard(emotion: emotion),
-          ),
-        ],
+        ),
       ),
     );
   }
