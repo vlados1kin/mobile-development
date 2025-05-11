@@ -1,76 +1,101 @@
-// Flutter imports:
+import 'dart:ui';
 import 'package:flutter/material.dart';
-
-// Project imports:
 import 'package:weather_app/features/weather_ecology/data/data.dart';
 import 'package:weather_app/features/weather_ecology/styles/pollution_list_elem_style.dart';
 import 'package:weather_app/features/weather_ecology/widgets/widgets.dart';
 
-/// Отображает элемент списка с данными об одном загрязнителе.
+/// Отображает элемент списка с данными об одном загрязнителе,
+/// стилизованный под iOS-подобное "glass" оформление.
 class PollutionListElem extends StatelessWidget {
-  /// Создаёт элемент списка загрязнителя.
-  const PollutionListElem({required this.pollutionData, super.key, this.style});
+  const PollutionListElem({
+    required this.pollutionData,
+    super.key,
+  });
 
-  /// Данные об уровне загрязнителя.
   final PollutionData pollutionData;
 
-  /// Стилизация элемента списка.
-  final PollutionListElemStyle? style;
+  Color _backgroundForLevel(Level level) {
+    switch (level) {
+      case Level.minimal:
+        return const Color(0xFF9EE6B8).withOpacity(0.25);
+      case Level.low:
+        return const Color(0xFFC8E986).withOpacity(0.25);
+      case Level.normal:
+        return const Color(0xFFFFDD85).withOpacity(0.25);
+      case Level.high:
+        return const Color(0xFFFFA97A).withOpacity(0.25);
+      case Level.critical:
+        return const Color(0xFFFF5E6C).withOpacity(0.25);
+    }
+  }
 
-  /// Строит UI-элемент с описанием загрязнителя, значением и уровнем.
   @override
   Widget build(BuildContext context) {
-    final defaultStyle = Theme.of(context).extension<PollutionListElemStyle>()!;
+    final style     = PollutionListElemStyle.of(context);
+    final theme     = Theme.of(context);
+    final cs        = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
-    final borderRadius = style?.borderRadius ?? defaultStyle.borderRadius;
-    final padding = style?.padding ?? defaultStyle.padding;
-    final backgroundColor =
-        style?.backgroundColor ?? defaultStyle.backgroundColor;
-    final textColor = style?.textColor ?? defaultStyle.textColor;
+    final bgColor = _backgroundForLevel(pollutionData.level);
 
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
-        color: backgroundColor,
-      ),
-      padding: padding,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              SizedBox(
-                width: 120,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      pollutionData.element,
-                      style: textTheme.bodyMedium?.copyWith(color: textColor),
-                    ),
-                    const Padding(padding: EdgeInsets.only(bottom: 2)),
-                    Text(
-                      pollutionData.description,
-                      style: textTheme.labelMedium?.copyWith(
-                        color: textColor.withValues(alpha: 0.7),
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                  ],
-                ),
-              ),
-              const Padding(padding: EdgeInsets.only(right: 15)),
-              Text(
-                '${pollutionData.value}',
-                style: textTheme.bodyLarge?.copyWith(color: textColor),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(style.borderRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(style.borderRadius),
+            boxShadow: [
+              BoxShadow(
+                color: theme.shadowColor.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
               ),
             ],
           ),
-          SizedBox(width: 150, child: LevelCard(level: pollutionData.level)),
-        ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween, // распределяем равномерно
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      pollutionData.element,
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    '${pollutionData.value}',
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: cs.onSurface,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Text(
+                  pollutionData.description,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: cs.onSurface.withOpacity(0.75),
+                    height: 1.3,
+                  ),
+                  softWrap: true,
+                  overflow: TextOverflow.fade,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

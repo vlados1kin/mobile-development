@@ -67,16 +67,13 @@ IconThemeData iconTheme(Color color) => IconThemeData(color: color);
 
 /// Получить расширения в зависимости от темы
 Set<ThemeExtension<dynamic>> buildExtensions({required bool isDark}) {
-  final secondaryBackground =
-      isDark ? const Color(0xFF212331) : const Color(0xFFEEEFF4);
-  final primaryBackground =
-      isDark ? const Color(0xFF283C65) : const Color(0xFF7999EA);
-  final infoBackground = isDark ? const Color(0xFF2A2D3E) : Colors.white;
-  final card = isDark ? const Color(0xFF314A7E) : const Color(0xFF5A85DE);
-  final mainTextColor = isDark ? Colors.white : Colors.black87;
-  const secondaryTextColor = Colors.white;
-  final titleTextColor =
-      isDark ? const Color(0xFF6682B8) : const Color(0xFF1C4494);
+  final secondaryBackground = isDark ? const Color(0xFF212331) : const Color(0xFFEEEFF4);
+  final primaryBackground   = isDark ? const Color(0xFF283C65) : const Color(0xFF7999EA);
+  final infoBackground      = isDark ? const Color(0xFF2A2D3E) : Colors.white;
+  final card                = isDark ? const Color(0xFF314A7E) : Colors.white;
+  final mainTextColor       = isDark ? Colors.white : Colors.black87;
+  const secondaryTextColor  = Colors.white;
+  final titleTextColor      = isDark ? const Color(0xFF6682B8) : const Color(0xFF1C4494);
 
   return {
     WeatherNowScreenStyle(
@@ -120,11 +117,9 @@ Set<ThemeExtension<dynamic>> buildExtensions({required bool isDark}) {
       backgroundColor: card,
       textColor: secondaryTextColor,
     ),
-    PollutionListElemStyle(
+    const PollutionListElemStyle(
       borderRadius: 15,
-      padding: const EdgeInsets.all(15),
-      backgroundColor: card,
-      textColor: secondaryTextColor,
+      padding: EdgeInsets.all(15),
     ),
     LevelCardStyle(textColor: secondaryTextColor),
     WeatherAlertListElemStyle(

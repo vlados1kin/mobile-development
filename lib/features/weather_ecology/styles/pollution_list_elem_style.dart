@@ -4,57 +4,49 @@ import 'dart:ui';
 // Flutter imports:
 import 'package:flutter/material.dart';
 
-/// Кастомное расширение темы для стиля элемента списка загрязнения.
+/// iOS-подобный стиль элемента списка загрязнения
+/// полностью берёт цвета из темы, как в AboutScreen
 class PollutionListElemStyle extends ThemeExtension<PollutionListElemStyle> {
-  /// Создаёт объект стиля элемента списка загрязнения с указанными параметрами.
-  PollutionListElemStyle({
+  const PollutionListElemStyle({
     required this.borderRadius,
     required this.padding,
-    required this.backgroundColor,
-    required this.textColor,
   });
 
-  /// Радиус скругления углов элемента списка.
+  /// Радиус скругления углов
   final double borderRadius;
 
-  /// Отступы внутри элемента списка.
+  /// Внутренние отступы
   final EdgeInsets padding;
 
-  /// Цвет фона элемента списка.
-  final Color backgroundColor;
+  /// Создаёт стиль, основанный на текущей теме
+  factory PollutionListElemStyle.of(BuildContext context) {
+    final theme = Theme.of(context);
+    return PollutionListElemStyle(
+      borderRadius: 20,
+      padding: const EdgeInsets.all(16),
+    );
+  }
 
-  /// Цвет текста внутри элемента списка.
-  final Color textColor;
-
-  /// Возвращает новый стиль с возможностью изменения параметров.
   @override
   PollutionListElemStyle copyWith({
     double? borderRadius,
     EdgeInsets? padding,
-    Color? backgroundColor,
-    Color? textColor,
   }) {
     return PollutionListElemStyle(
       borderRadius: borderRadius ?? this.borderRadius,
       padding: padding ?? this.padding,
-      backgroundColor: backgroundColor ?? this.backgroundColor,
-      textColor: textColor ?? this.textColor,
     );
   }
 
-  /// Интерполяция между двумя стилями (например, при смене темы).
   @override
   PollutionListElemStyle lerp(
-    covariant ThemeExtension<PollutionListElemStyle>? other,
-    double t,
-  ) {
+      covariant ThemeExtension<PollutionListElemStyle>? other,
+      double t,
+      ) {
     if (other is! PollutionListElemStyle) return this;
-
     return PollutionListElemStyle(
       borderRadius: lerpDouble(borderRadius, other.borderRadius, t)!,
       padding: EdgeInsets.lerp(padding, other.padding, t)!,
-      backgroundColor: Color.lerp(backgroundColor, other.backgroundColor, t)!,
-      textColor: Color.lerp(textColor, other.textColor, t)!,
     );
   }
 }

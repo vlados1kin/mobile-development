@@ -88,7 +88,7 @@ class _AboutScreenState extends State<AboutScreen> with TickerProviderStateMixin
 
                 // Название
                 Text(
-                  'WeatherVision',
+                  'QuickWeather',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.3,
@@ -130,12 +130,12 @@ class _AboutScreenState extends State<AboutScreen> with TickerProviderStateMixin
                   children: [
                     _buildActionTile(
                       icon: Icons.email_outlined,
-                      title: 'weathervision@bsuir.by',
+                      title: 'quickweather@bsuir.by',
                       onTap: () {},
                     ),
                     _buildActionTile(
                       icon: Icons.language_outlined,
-                      title: 'weathervision.bsuir.by',
+                      title: 'quickweather.bsuir.by',
                       onTap: () {},
                     ),
                   ],
