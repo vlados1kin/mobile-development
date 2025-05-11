@@ -1,7 +1,5 @@
-// Flutter imports:
 import 'package:flutter/material.dart';
 
-// Project imports:
 import 'package:weather_app/features/weather_day_forecast/styles/weather_day_forecast_screen.dart';
 import 'package:weather_app/features/weather_forecast/data/weather_forecast_data.dart';
 import 'package:weather_app/features/weather_forecast/widgets/weather_list_elem.dart';
@@ -28,7 +26,7 @@ class WeatherDayForecastScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final defaultStyle =
-        Theme.of(context).extension<WeatherDayForecastScreenStyle>()!;
+    Theme.of(context).extension<WeatherDayForecastScreenStyle>()!;
 
     final titleStyle = style?.titleStyle ?? defaultStyle.titleStyle;
     final subtitleStyle = style?.subtitleStyle ?? defaultStyle.subtitleStyle;
@@ -38,12 +36,14 @@ class WeatherDayForecastScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(dayData.title, style: titleStyle),
-            Text(dayData.subtitle!, style: subtitleStyle),
-          ],
+        title: Center( // Центрируем весь блок текста
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center, // Центрируем колонку
+            children: [
+              Text('Погода на ${dayData.subtitle}', style: titleStyle),
+              Text(dayData.title!, style: subtitleStyle),
+            ],
+          ),
         ),
       ),
       body: ListView.separated(

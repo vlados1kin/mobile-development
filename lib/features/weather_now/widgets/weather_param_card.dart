@@ -1,4 +1,3 @@
-// Flutter imports:
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -8,16 +7,12 @@ import 'package:weather_app/features/weather_now/styles/weather_param_card_style
 class WeatherParamCard extends StatelessWidget {
   /// Конструктор
   const WeatherParamCard({
-    required this.icon,
     required this.title,
     required this.value,
     required this.units,
     super.key,
     this.style,
   });
-
-  /// Картинка иконки
-  final IconData icon;
 
   /// Заголовок
   final String title;
@@ -36,7 +31,6 @@ class WeatherParamCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     final defaultStyle = Theme.of(context).extension<WeatherParamCardStyle>()!;
-    final iconSize = style?.iconSize ?? defaultStyle.iconSize;
     final borderRadius = style?.borderRadius ?? defaultStyle.borderRadius;
     final padding = style?.padding ?? defaultStyle.padding;
     final backgroundColor =
@@ -49,35 +43,34 @@ class WeatherParamCard extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
         color: backgroundColor,
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: iconSize, color: textColor),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          // Название параметра
+          Text(
+            title,
+            style: textTheme.labelMedium?.copyWith(
+              color: textColor.withOpacity(0.7),
+            ),
+          ),
+          const SizedBox(height: 7),
+
+          // Значение параметра и единицы измерения
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: textTheme.labelMedium?.copyWith(
-                  color: textColor.withValues(alpha: 0.7),
+              Expanded(
+                child: Text(
+                  value,
+                  style: textTheme.headlineMedium?.copyWith(color: textColor),
                 ),
               ),
-              const SizedBox(height: 7),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    value,
-                    style: textTheme.headlineMedium?.copyWith(color: textColor),
-                  ),
-                  const SizedBox(width: 3),
-                  Text(
-                    units,
-                    style: textTheme.labelMedium?.copyWith(
-                      color: textColor.withValues(alpha: 0.7),
-                    ),
-                  ),
-                ],
+              const SizedBox(width: 3),
+              Text(
+                units,
+                style: textTheme.labelMedium?.copyWith(
+                  color: textColor.withOpacity(0.7),
+                ),
               ),
             ],
           ),

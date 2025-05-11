@@ -1,10 +1,5 @@
-// Flutter imports:
 import 'package:flutter/material.dart';
-
-// Package imports:
 import 'package:provider/provider.dart';
-
-// Project imports:
 import 'package:weather_app/features/weather_forecast/data/weather_forecast_data.dart';
 import 'package:weather_app/features/weather_forecast/styles/weather_list_elem_style.dart';
 import 'package:weather_app/features/weather_settings/providers/providers.dart';
@@ -12,7 +7,6 @@ import 'package:weather_app/services/settings/models/models.dart';
 
 /// Виджет элемента списка прогноза погоды
 class WeatherListElem extends StatelessWidget {
-  /// Конструктор
   const WeatherListElem({
     required this.weatherData,
     super.key,
@@ -20,16 +14,10 @@ class WeatherListElem extends StatelessWidget {
     this.style,
   });
 
-  /// Информация о прогнозе погоды
   final WeatherData weatherData;
-
-  /// Коллбэк нажатия на элемент
   final VoidCallback? onTap;
-
-  /// Кастомный стиль элемента
   final WeatherListElemStyle? style;
 
-  /// Возвращать путь к иконке по коду
   String getWeatherIconPath(String iconCode) {
     return 'assets/images/png/$iconCode.png';
   }
@@ -40,9 +28,7 @@ class WeatherListElem extends StatelessWidget {
     final defaultStyle = Theme.of(context).extension<WeatherListElemStyle>()!;
     final borderRadius = style?.borderRadius ?? defaultStyle.borderRadius;
     final padding = style?.padding ?? defaultStyle.padding;
-    final backgroundColor =
-        style?.backgroundColor ?? defaultStyle.backgroundColor;
-    final textColor = style?.textColor ?? defaultStyle.textColor;
+    final backgroundColor = style?.backgroundColor ?? defaultStyle.backgroundColor;
 
     final provider = Provider.of<SettingsProvider>(context);
 
@@ -90,92 +76,118 @@ class WeatherListElem extends StatelessWidget {
       TemperatureUnit.kelvin => 'K',
     };
 
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Цвет текста для выбранной темы
+    final textColor = isDark ? Colors.white : Colors.blue[800];
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
-          color: backgroundColor,
+          borderRadius: BorderRadius.circular(borderRadius),
+          color: isDark ? Colors.grey[850] : Colors.white, // Белый фон для светлой темы
         ),
         padding: padding,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                SizedBox(
-                  width: 80,
-                  child:
-                      weatherData.subtitle != null
-                          ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                weatherData.title,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: textColor,
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(bottom: 2),
-                              ),
-                              Text(
-                                weatherData.subtitle!,
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  color: textColor.withValues(alpha: 0.7),
-                                ),
-                              ),
-                            ],
-                          )
-                          : Text(
-                            weatherData.title,
-                            style: theme.textTheme.bodyLarge?.copyWith(
+            // Маленький прямоугольник слева для иконки
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Colors.blue, // Цвет фона иконки
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Image.asset(
+                getWeatherIconPath(weatherData.icon),
+                width: 40,
+                height: 40,
+                errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+              ),
+            ),
+            const SizedBox(width: 16), // Отступ между иконкой и текстом
+
+            // Большой прямоугольник справа для текста
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 🗓 Дата и "сегодня"
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          weatherData.title,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            color: textColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        if (weatherData.subtitle != null) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            weatherData.subtitle!,
+                            style: theme.textTheme.headlineSmall?.copyWith(
                               color: textColor,
                             ),
                           ),
-                ),
-                const Padding(padding: EdgeInsets.only(right: 20)),
-                Image.asset(
-                  getWeatherIconPath(weatherData.icon),
-                  width: 50,
-                  height: 50,
-                  errorBuilder:
-                      (context, error, stackTrace) => const Icon(Icons.error),
-                ),
-                const Padding(padding: EdgeInsets.only(right: 20)),
-                if (temperature != null) ...[
-                  Text(
-                    '$temperature$temperatureSign',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: textColor,
+                        ],
+                      ],
                     ),
-                  ),
-                ] else ...[
-                  Text(
-                    '$minTemperature..$maxTemperature$temperatureSign',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: textColor,
+                    const SizedBox(height: 12),
+
+                    // 🌤 Компактная информация: температура | ветер и давление
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Температура
+                        if (temperature != null)
+                          Text(
+                            '$temperature$temperatureSign',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: textColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          )
+                        else
+                          Text(
+                            '$minTemperature..$maxTemperature$temperatureSign',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: textColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+
+                        // Ветер и давление
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${wind.toStringAsFixed(1)} $speedSign ${weatherData.windDir}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: textColor,
+                              ),
+                            ),
+                            Text(
+                              '$pressure $pressureSign',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: textColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '$pressure $pressureSign',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: textColor.withValues(alpha: 0.7),
-                  ),
+                  ],
                 ),
-                Text(
-                  '${wind.toStringAsFixed(1)} $speedSign ${weatherData.windDir}',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: textColor.withValues(alpha: 0.7),
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),

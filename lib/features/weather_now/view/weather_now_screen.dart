@@ -1,241 +1,437 @@
-// Flutter imports:
 import 'package:flutter/material.dart';
-
-// Package imports:
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-// Project imports:
 import 'package:weather_app/features/main_navigation/providers/providers.dart';
+import 'package:weather_app/features/weather_alert_info/view/weather_alert_info_screen.dart';
+import 'package:weather_app/features/weather_forecast/widgets/weather_list.dart';
 import 'package:weather_app/features/weather_now/data/weather_info.dart';
-import 'package:weather_app/features/weather_now/styles/weather_now_screen_style.dart';
-import 'package:weather_app/features/weather_now/widgets/weather_list_draggable_sheet.dart';
-import 'package:weather_app/features/weather_now/widgets/widgets.dart';
 import 'package:weather_app/features/weather_settings/providers/providers.dart';
 import 'package:weather_app/router/router.dart';
 import 'package:weather_app/services/settings/models/models.dart';
+import 'package:weather_app/features/weather_alerts/widgets/weather_alert_list_elem.dart';
+import 'package:weather_app/features/weather_alerts/data/weather_alert_data.dart';
+import 'package:weather_app/features/weather_forecast/data/weather_forecast_data.dart'; // Добавляем импорты для прогноза погоды
+import 'package:weather_app/features/weather_forecast/widgets/weather_list_elem.dart';
+import 'package:weather_app/features/weather_day_forecast/view/weather_day_forecast_screen.dart';
 
-/// Виджет домашнего экрана прогноза погоды
 class WeatherNowScreen extends StatefulWidget {
-  /// Конструктор
-  const WeatherNowScreen({super.key, this.style});
-
-  /// Кастомный стиль виджета
-  final WeatherNowScreenStyle? style;
+  const WeatherNowScreen({super.key});
 
   @override
   State<WeatherNowScreen> createState() => _WeatherNowScreenState();
 }
 
-class _WeatherNowScreenState extends State<WeatherNowScreen> {
+class _WeatherNowScreenState extends State<WeatherNowScreen> with TickerProviderStateMixin {
+  bool _showExtra = false;
+  bool _showAlerts = false;
+  bool _showForecast = false; // Новая переменная для управления видимостью прогноза
+
   @override
   Widget build(BuildContext context) {
     final weatherProvider = Provider.of<WeatherProvider>(context);
+    final settingsProvider = Provider.of<SettingsProvider>(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     if (weatherProvider.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        backgroundColor: theme.colorScheme.background,
+        body: const Center(child: CircularProgressIndicator()),
+      );
     }
 
-    final mainWeatherData = weatherProvider.mainWeather!;
-
-    final defaultStyle = Theme.of(context).extension<WeatherNowScreenStyle>()!;
-    final textColor = widget.style?.textColor ?? defaultStyle.textColor;
-    final backgroundColor =
-        widget.style?.backgroundColor ?? defaultStyle.backgroundColor;
-
-    final theme = Theme.of(context);
-
-    final provider = Provider.of<SettingsProvider>(context);
-
-    final wind = switch (provider.windSpeedUnit) {
-      WindSpeedUnit.mps => mainWeatherData.windM,
-      WindSpeedUnit.kph => mainWeatherData.windK,
-    };
-
-    final speedSign = switch (provider.windSpeedUnit) {
-      WindSpeedUnit.mps => 'м/с',
-      WindSpeedUnit.kph => 'км/ч',
-    };
-
-    final gust = switch (provider.windSpeedUnit) {
-      WindSpeedUnit.mps => mainWeatherData.gustM,
-      WindSpeedUnit.kph => mainWeatherData.gustK,
-    };
-
-    final pressure = switch (provider.pressureUnit) {
-      PressureUnit.hpa => mainWeatherData.pressureP,
-      PressureUnit.mmHg => mainWeatherData.pressureM,
-    };
-
-    final pressureSign = switch (provider.pressureUnit) {
-      PressureUnit.hpa => 'гПа',
-      PressureUnit.mmHg => 'мм рт. ст.',
-    };
-
-    final city =
-        Provider.of<WeatherProvider>(context).currentLocation?.city ??
-        'Город не найден';
-
-    final day = mainWeatherData.lastUpdate.day.toString().padLeft(2, '0');
-    final month = mainWeatherData.lastUpdate.month.toString().padLeft(2, '0');
-    final year = mainWeatherData.lastUpdate.year;
-    final hour = mainWeatherData.lastUpdate.hour.toString().padLeft(2, '0');
-    final minute = mainWeatherData.lastUpdate.minute.toString().padLeft(2, '0');
-    final lastUpdate = '$day.$month.$year в $hour:$minute';
+    final data = weatherProvider.mainWeather!;
+    final wind = settingsProvider.windSpeedUnit == WindSpeedUnit.mps
+        ? data.windM
+        : data.windK;
+    final gust = settingsProvider.windSpeedUnit == WindSpeedUnit.mps
+        ? data.gustM
+        : data.gustK;
+    final speedUnit =
+    settingsProvider.windSpeedUnit == WindSpeedUnit.mps ? 'м/с' : 'км/ч';
+    final pressure = settingsProvider.pressureUnit == PressureUnit.hpa
+        ? data.pressureP
+        : data.pressureM;
+    final pressureUnit =
+    settingsProvider.pressureUnit == PressureUnit.hpa ? 'гПа' : 'мм рт. ст.';
+    final city = weatherProvider.currentLocation?.city ?? 'Город не найден';
 
     return Scaffold(
-      backgroundColor: backgroundColor,
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              floating: true,
-              snap: true,
-              backgroundColor: backgroundColor,
-              expandedHeight: 85,
-              flexibleSpace: FlexibleSpaceBar(
-                centerTitle: true,
-                title: Text(
-                  'Обновлено $lastUpdate',
-                  style: TextStyle(color: textColor, fontSize: 12),
-                ),
-                background: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                      onPressed: () async {
-                        await weatherProvider.updateWeather();
-                      },
-                      icon: Icon(Icons.refresh, color: textColor),
+      backgroundColor: theme.colorScheme.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildCityInfo(city, isDark),
+              const SizedBox(height: 12),
+              _buildWeatherInfo(data, isDark, data.text),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _showExtra = !_showExtra;
+                    });
+                  },
+                  icon: AnimatedRotation(
+                    turns: _showExtra ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: const Icon(Icons.expand_more),
+                  ),
+                  label: Text(
+                    _showExtra ? 'Скрыть параметры' : 'Дополнительные параметры',
+                    style: TextStyle(fontSize: 16, color: isDark ? Colors.white : Colors.black),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isDark ? Colors.grey[800] : Colors.white,
+                    foregroundColor: isDark ? Colors.white : Colors.blue,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ];
-        },
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  AppBar(
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(city, style: TextStyle(color: textColor)),
-                        Text(
-                          mainWeatherData.text,
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: textColor.withValues(alpha: 0.7),
-                          ),
-                        ),
-                      ],
+              const SizedBox(height: 12),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: _showExtra
+                    ? _buildWeatherGrid(
+                    data, wind, gust, speedUnit, pressure, pressureUnit, isDark)
+                    : const SizedBox.shrink(),
+              ),
+              // Weather Alerts Section
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _showAlerts = !_showAlerts;
+                    });
+                  },
+                  icon: AnimatedRotation(
+                    turns: _showAlerts ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: const Icon(Icons.notifications),
+                  ),
+                  label: Text(
+                    _showAlerts ? 'Скрыть предупреждения' : 'Показать предупреждения',
+                    style: TextStyle(fontSize: 16, color: isDark ? Colors.white : Colors.black),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isDark ? Colors.grey[800] : Colors.white,
+                    foregroundColor: isDark ? Colors.white : Colors.blue,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    iconTheme: IconThemeData(color: textColor),
-                    actions: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, NavigationRoutes.alerts);
-                        },
-                        icon: const Icon(Icons.warning_amber_rounded),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            NavigationRoutes.locationSearch,
-                          );
-                        },
-                        icon: const Icon(Icons.location_on_outlined),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, NavigationRoutes.camera);
-                        },
-                        icon: const Icon(Icons.photo_camera_outlined),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: _showAlerts
+                    ? _buildAlertList(weatherProvider.alertList, isDark)
+                    : const SizedBox.shrink(),
+              ),
+              // Прогноз погоды на ближайшие дни
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.grey[850] : Colors.white, // Изменяем фон в зависимости от темы
+                    borderRadius: BorderRadius.circular(16), // Закругленные углы
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  _buildMainInfo(mainWeatherData),
-                  _buildGrid(
-                    mainWeatherData,
-                    wind,
-                    gust,
-                    speedSign,
-                    pressure,
-                    pressureSign,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.calendar_today, // Иконка календаря
+                        color: isDark ? Colors.white : Colors.blue, // Изменяем цвет иконки в зависимости от темы
+                      ),
+                      const SizedBox(width: 8), // Отступ между иконкой и текстом
+                      Text(
+                        'Прогноз на неделю',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isDark ? Colors.white : Colors.black, // Изменяем цвет текста в зависимости от темы
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: WeatherList(
+                  weatherDataList: weatherProvider.forecast,
+                  scrollController: ScrollController(),
+                )
+
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCityInfo(String city, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              city,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
-            WeatherListDraggableSheet(weatherList: weatherProvider.forecast),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(context, NavigationRoutes.locationSearch);
+              },
+              icon: Icon(
+                Icons.location_on,
+                color: isDark ? Colors.white : Colors.black,
+              ),
+              label: Text(
+                'Выбрать город',
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontSize: 16,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDark ? Colors.grey[800] : Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildMainInfo(MainWeatherData mainWeather) {
+  Widget _buildWeatherInfo(MainWeatherData data, bool isDark, String description) {
+    final provider = Provider.of<SettingsProvider>(context);
+    final temperature = switch (provider.temperatureUnit) {
+      TemperatureUnit.celsius => data.temperatureC,
+      TemperatureUnit.fahrenheit => data.temperatureF,
+      TemperatureUnit.kelvin => data.temperatureK,
+    };
+    final temperatureSign = switch (provider.temperatureUnit) {
+      TemperatureUnit.celsius => '°C',
+      TemperatureUnit.fahrenheit => '°F',
+      TemperatureUnit.kelvin => 'K',
+    };
+    final feelsLike = switch (provider.temperatureUnit) {
+      TemperatureUnit.celsius => data.feelsLikeC,
+      TemperatureUnit.fahrenheit => data.feelsLikeF,
+      TemperatureUnit.kelvin => data.feelsLikeK,
+    };
+
+    final textColor = isDark ? Colors.white : Colors.blue;
+    final theme = Theme.of(context);
+
+    // Получаем текущую дату
+    final currentDate = DateFormat('dd.MM.yyyy').format(DateTime.now());
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: WeatherInfo(weatherData: mainWeather),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.grey[850] : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Надпись "Сегодня, дата" по центру и увеличенная
+            Center(
+              child: Text(
+                'Сегодня, $currentDate',
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: textColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16), // Отступ
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Для иконки и текста
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '$temperature',
+                            style: theme.textTheme.displayLarge?.copyWith(color: textColor),
+                          ),
+                          Text(
+                            temperatureSign,
+                            style: theme.textTheme.displaySmall?.copyWith(color: textColor),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Ощущается как $feelsLike$temperatureSign',
+                        style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        style: theme.textTheme.bodySmall?.copyWith(color: textColor),
+                      ),
+                    ],
+                  ),
+                ),
+                // Иконка погоды
+                Image.asset(
+                  'assets/images/png/${data.icon}.png',
+                  width: 120,
+                  height: 120,
+                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildGrid(
-    MainWeatherData mainWeather,
-    double wind,
-    double gust,
-    String speedSign,
-    int pressure,
-    String pressureSign,
-  ) {
-    return GridView.count(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      physics: const NeverScrollableScrollPhysics(),
+  Widget _buildWeatherGrid(
+      MainWeatherData data,
+      double wind,
+      double gust,
+      String speedUnit,
+      int pressure,
+      String pressureUnit,
+      bool isDark,
+      ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        children: [
+          _paramCard('Влажность', '${data.humidity} %', isDark),
+          const SizedBox(height: 12),
+          _paramCard('Давление', '$pressure $pressureUnit', isDark),
+          const SizedBox(height: 12),
+          _paramCard('Ветер', '${wind.toStringAsFixed(1)} $speedUnit', isDark),
+          const SizedBox(height: 12),
+          _paramCard('Порывы', '${gust.toStringAsFixed(1)} $speedUnit', isDark),
+          const SizedBox(height: 12),
+          _paramCard('Рассвет', '${data.sunriseHour}ч ${data.sunriseMinute}м', isDark),
+          const SizedBox(height: 12),
+          _paramCard('Закат', '${data.sunsetHour}ч ${data.sunsetMinute}м', isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _paramCard(String title, String value, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey[850] : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? Colors.white70 : Colors.black87,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAlertList(List<WeatherAlertData> alertList, bool isDark) {
+    if (alertList.isEmpty) {
+      return Center(
+        child: Text(
+          'Нет доступных предупреждений',
+          style: TextStyle(
+            color: isDark ? Colors.white : Colors.black,
+            fontSize: 16,
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
       shrinkWrap: true,
-      crossAxisCount: 2,
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-      childAspectRatio: 2.2,
-      children: [
-        WeatherParamCard(
-          icon: Icons.water_drop_outlined,
-          title: 'Влажность',
-          value: mainWeather.humidity.toString(),
-          units: '%',
-        ),
-        WeatherParamCard(
-          icon: Icons.compress,
-          title: 'Давление',
-          value: pressure.toString(),
-          units: pressureSign,
-        ),
-        WeatherParamCard(
-          icon: Icons.wind_power,
-          title: 'Ветер',
-          value: wind.toStringAsFixed(1),
-          units: speedSign,
-        ),
-        WeatherParamCard(
-          icon: Icons.cloud_outlined,
-          title: 'Порывы',
-          value: gust.toStringAsFixed(1),
-          units: speedSign,
-        ),
-        WeatherParamCard(
-          icon: Icons.light_mode_outlined,
-          title: 'Рассвет',
-          value: '${mainWeather.sunriseHour}ч',
-          units: '${mainWeather.sunriseMinute}м',
-        ),
-        WeatherParamCard(
-          icon: Icons.dark_mode_outlined,
-          title: 'Закат',
-          value: '${mainWeather.sunsetHour}ч',
-          units: '${mainWeather.sunsetMinute}м',
-        ),
-      ],
+      physics: const NeverScrollableScrollPhysics(), // Чтобы не конфликтовало с внешним ScrollView
+      itemCount: alertList.length,
+      itemBuilder: (context, index) {
+        return WeatherAlertListElem(
+          alertData: alertList[index],
+          // Без onTap — перехода не будет
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(height: 20),
     );
   }
 }

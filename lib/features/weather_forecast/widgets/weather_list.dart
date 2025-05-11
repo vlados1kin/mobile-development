@@ -1,4 +1,3 @@
-// Flutter imports:
 import 'package:flutter/material.dart';
 
 // Project imports:
@@ -15,7 +14,7 @@ class WeatherList extends StatelessWidget {
     super.key,
   });
 
-  /// Прогноз прогоды по дням
+  /// Прогноз погоды по дням
   final Map<WeatherData, List<WeatherData>> weatherDataList;
 
   /// Контроллер прокрутки
@@ -23,30 +22,31 @@ class WeatherList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      controller: scrollController,
-      itemCount: weatherDataList.length,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      itemBuilder:
-          (context, index) => WeatherListElem(
-            weatherData: weatherDataList.keys.toList()[index],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<WeatherDayForecastScreen>(
-                  builder:
-                      (context) => WeatherDayForecastScreen(
-                        dayData: weatherDataList.keys.toList()[index],
-                        forecast:
-                            weatherDataList[weatherDataList.keys
-                                .toList()[index]] ??
-                            [],
-                      ),
+    return Container(
+      height: 1000, // Установите конкретную высоту для вашего списка
+      child: ListView.separated(
+        controller: scrollController,
+        shrinkWrap: true, // Устанавливаем shrinkWrap, чтобы ListView не пытался занять весь экран
+        itemCount: weatherDataList.length,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        itemBuilder: (context, index) => WeatherListElem(
+          weatherData: weatherDataList.keys.toList()[index],
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<WeatherDayForecastScreen>(
+                builder: (context) => WeatherDayForecastScreen(
+                  dayData: weatherDataList.keys.toList()[index],
+                  forecast: weatherDataList[weatherDataList.keys
+                      .toList()[index]] ??
+                      [],
                 ),
-              );
-            },
-          ),
-      separatorBuilder: (context, index) => const SizedBox(height: 10),
+              ),
+            );
+          },
+        ),
+        separatorBuilder: (context, index) => const SizedBox(height: 10),
+      ),
     );
   }
 }

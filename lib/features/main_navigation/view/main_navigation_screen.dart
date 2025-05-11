@@ -52,9 +52,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildBarIcon(Icons.cloud_outlined, Icons.cloud, 0),
-                  _buildBarIcon(Icons.air_outlined, Icons.air, 1),
-                  _buildBarIcon(Icons.settings_outlined, Icons.settings, 2),
+                  _buildBarText("Прогноз", 0),
+                  _buildBarText("Экология", 1),
+                  _buildBarText("Настройки", 2),
                 ],
               ),
             ),
@@ -64,20 +64,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  Widget _buildBarIcon(IconData icon, IconData selectedIcon, int index) {
+  Widget _buildBarText(String label, int index) {
     final isSelected = currentPageIndex == index;
     final color = isSelected
         ? Theme.of(context).colorScheme.primary
         : Theme.of(context).colorScheme.onSurface.withOpacity(0.5);
 
-    return IconButton(
-      icon: Icon(isSelected ? selectedIcon : icon, color: color),
-      iconSize: 28,
+    return TextButton(
       onPressed: () {
         setState(() {
           currentPageIndex = index;
         });
       },
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }
