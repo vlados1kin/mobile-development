@@ -51,13 +51,12 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(title: const Text('Выбор локации')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,  // Центрируем содержимое
             children: [
               // Выбранный город (центрированный и с увеличенным прямоугольником)
               Padding(
@@ -72,7 +71,6 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                     ],
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,  // Центрируем текст
                     children: [
                       Text(
                         'Выбранный город:',

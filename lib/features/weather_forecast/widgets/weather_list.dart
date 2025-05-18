@@ -22,7 +22,7 @@ class WeatherList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 1000, // Установите конкретную высоту для вашего списка
       child: ListView.separated(
         controller: scrollController,

@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:weather_app/features/weather_ecology/data/data.dart';
 
 /// Виджет карточки индекса загрязнения воздуха в стиле glassmorphism,
 /// где фон меняется в зависимости от качества воздуха.
@@ -18,35 +17,30 @@ class AirPollutionIndexCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme   = Theme.of(context);
     final cs      = theme.colorScheme;
-    final radius  = 20.0;
-    final padding = const EdgeInsets.all(16);
+    const radius  = 20.0;
+    const padding = EdgeInsets.all(16);
 
     // Описание и базовый цвет в зависимости от уровня
     String description;
     Color baseColor;
     switch (valueIndex) {
       case 1:
-        description = 'Очень чистый воздух';
+        description = 'Отлично';
         baseColor = const Color(0xFF66B44F);
-        break;
       case 2:
-        description = 'Чистый воздух';
+        description = 'Хорошо';
         baseColor = const Color(0xFFAAC810);
-        break;
       case 3:
-        description = 'Нормальный воздух';
+        description = 'Нормально';
         baseColor = const Color(0xFFFAD000);
-        break;
       case 4:
-        description = 'Грязный воздух';
+        description = 'Плохо';
         baseColor = const Color(0xFFEF7E1E);
-        break;
       case 5:
-        description = 'Очень грязный воздух';
+        description = 'Ужасно';
         baseColor = const Color(0xFFC6344E);
-        break;
       default:
-        description = 'Очень чистый воздух';
+        description = 'Отлично';
         baseColor = const Color(0xFF66B44F);
     }
 

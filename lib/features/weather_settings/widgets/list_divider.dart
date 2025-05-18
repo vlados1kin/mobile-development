@@ -24,8 +24,6 @@ class ListDivider extends StatelessWidget {
               Colors.black.withOpacity(0.05),
               Colors.black.withOpacity(0.02),
             ],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
           ),
         ),
       ),

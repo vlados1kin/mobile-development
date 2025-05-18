@@ -52,9 +52,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildBarText("Прогноз", 0),
-                  _buildBarText("Экология", 1),
-                  _buildBarText("Настройки", 2),
+                  _buildBarText('Прогноз', 0),
+                  _buildBarText('Экология', 1),
+                  _buildBarText('Настройки', 2),
                 ],
               ),
             ),

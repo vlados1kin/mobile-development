@@ -43,11 +43,11 @@ class _AboutScreenState extends State<AboutScreen> with TickerProviderStateMixin
       ),
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: theme.colorScheme.surface,
         appBar: AppBar(
           title: const Text('О программе'),
           centerTitle: true,
-          backgroundColor: theme.colorScheme.background.withOpacity(0.9),
+          backgroundColor: theme.colorScheme.surface.withOpacity(0.9),
           elevation: 0,
           scrolledUnderElevation: 0,
           surfaceTintColor: Colors.transparent,
@@ -58,7 +58,6 @@ class _AboutScreenState extends State<AboutScreen> with TickerProviderStateMixin
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(24, kToolbarHeight + 32, 24, 32),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Иконка
                 Hero(

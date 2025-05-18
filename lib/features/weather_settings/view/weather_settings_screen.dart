@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_app/features/weather_settings/styles/weather_settings_screen_style.dart';
 import 'package:weather_app/features/weather_settings/providers/providers.dart';
-import 'package:weather_app/features/weather_settings/widgets/widgets.dart';
 import 'package:weather_app/router/router.dart';
 import 'package:weather_app/services/settings/models/models.dart';
 
@@ -52,11 +51,11 @@ class _WeatherSettingsScreenState extends State<WeatherSettingsScreen> with Tick
       ),
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: theme.colorScheme.surface,
         appBar: AppBar(
           title: const Text('Настройки'),
           centerTitle: true,
-          backgroundColor: theme.colorScheme.background.withOpacity(0.9),
+          backgroundColor: theme.colorScheme.surface.withOpacity(0.9),
           elevation: 0,
           scrolledUnderElevation: 0,
           surfaceTintColor: Colors.transparent,
@@ -67,7 +66,6 @@ class _WeatherSettingsScreenState extends State<WeatherSettingsScreen> with Tick
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(24, kToolbarHeight + 32, 24, 32),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Иконка
                 Hero(
@@ -205,7 +203,7 @@ class _WeatherSettingsScreenState extends State<WeatherSettingsScreen> with Tick
             borderRadius: BorderRadius.circular(20), // Скругленные углы для iOS-стиля
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

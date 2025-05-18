@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_app/features/main_navigation/providers/providers.dart';
-import 'package:weather_app/features/weather_alert_info/view/weather_alert_info_screen.dart';
 import 'package:weather_app/features/weather_forecast/widgets/weather_list.dart';
 import 'package:weather_app/features/weather_now/data/weather_info.dart';
 import 'package:weather_app/features/weather_settings/providers/providers.dart';
@@ -10,9 +9,7 @@ import 'package:weather_app/router/router.dart';
 import 'package:weather_app/services/settings/models/models.dart';
 import 'package:weather_app/features/weather_alerts/widgets/weather_alert_list_elem.dart';
 import 'package:weather_app/features/weather_alerts/data/weather_alert_data.dart';
-import 'package:weather_app/features/weather_forecast/data/weather_forecast_data.dart'; // Добавляем импорты для прогноза погоды
-import 'package:weather_app/features/weather_forecast/widgets/weather_list_elem.dart';
-import 'package:weather_app/features/weather_day_forecast/view/weather_day_forecast_screen.dart';
+// Добавляем импорты для прогноза погоды
 
 class WeatherNowScreen extends StatefulWidget {
   const WeatherNowScreen({super.key});
@@ -24,7 +21,7 @@ class WeatherNowScreen extends StatefulWidget {
 class _WeatherNowScreenState extends State<WeatherNowScreen> with TickerProviderStateMixin {
   bool _showExtra = false;
   bool _showAlerts = false;
-  bool _showForecast = false; // Новая переменная для управления видимостью прогноза
+  final bool _showForecast = false; // Новая переменная для управления видимостью прогноза
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +32,7 @@ class _WeatherNowScreenState extends State<WeatherNowScreen> with TickerProvider
 
     if (weatherProvider.isLoading) {
       return Scaffold(
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: theme.colorScheme.surface,
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -57,7 +54,7 @@ class _WeatherNowScreenState extends State<WeatherNowScreen> with TickerProvider
     final city = weatherProvider.currentLocation?.city ?? 'Город не найден';
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(bottom: 32),
@@ -101,7 +98,7 @@ class _WeatherNowScreenState extends State<WeatherNowScreen> with TickerProvider
                 curve: Curves.easeInOut,
                 child: _showExtra
                     ? _buildWeatherGrid(
-                    data, wind, gust, speedUnit, pressure, pressureUnit, isDark)
+                    data, wind, gust, speedUnit, pressure, pressureUnit, isDark,)
                     : const SizedBox.shrink(),
               ),
               // Weather Alerts Section
@@ -184,7 +181,7 @@ class _WeatherNowScreenState extends State<WeatherNowScreen> with TickerProvider
                 child: WeatherList(
                   weatherDataList: weatherProvider.forecast,
                   scrollController: ScrollController(),
-                )
+                ),
 
               ),
             ],

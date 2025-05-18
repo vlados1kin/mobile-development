@@ -15,8 +15,9 @@ class WeatherEcologyScreen extends StatelessWidget {
     final index         = provider.defraIndex ?? 1;
 
     int valueIndex;
-    if      (index > 9) valueIndex = 5;
-    else if (index > 6) valueIndex = 4;
+    if      (index > 9) {
+      valueIndex = 5;
+    } else if (index > 6) valueIndex = 4;
     else if (index > 3) valueIndex = 3;
     else if (index > 1) valueIndex = 2;
     else                valueIndex = 1;
@@ -26,15 +27,15 @@ class WeatherEcologyScreen extends StatelessWidget {
     final tt    = theme.textTheme;
 
     return Scaffold(
-      backgroundColor: cs.background,
+      backgroundColor: cs.surface,
       appBar: AppBar(
-        backgroundColor: cs.background.withOpacity(0.9),
+        backgroundColor: cs.surface.withOpacity(0.9),
         elevation: 0,
         centerTitle: true,
         title: Text(
           'Состояние воздуха',
           style: tt.headlineSmall?.copyWith(
-            color: cs.onBackground,
+            color: cs.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),

@@ -38,10 +38,9 @@ class WeatherDayForecastScreen extends StatelessWidget {
       appBar: AppBar(
         title: Center( // Центрируем весь блок текста
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center, // Центрируем колонку
             children: [
               Text('Погода на ${dayData.subtitle}', style: titleStyle),
-              Text(dayData.title!, style: subtitleStyle),
+              Text(dayData.title, style: subtitleStyle),
             ],
           ),
         ),

@@ -12,20 +12,20 @@ class PollutionListElemStyle extends ThemeExtension<PollutionListElemStyle> {
     required this.padding,
   });
 
+  /// Создаёт стиль, основанный на текущей теме
+  factory PollutionListElemStyle.of(BuildContext context) {
+    final theme = Theme.of(context);
+    return const PollutionListElemStyle(
+      borderRadius: 20,
+      padding: EdgeInsets.all(16),
+    );
+  }
+
   /// Радиус скругления углов
   final double borderRadius;
 
   /// Внутренние отступы
   final EdgeInsets padding;
-
-  /// Создаёт стиль, основанный на текущей теме
-  factory PollutionListElemStyle.of(BuildContext context) {
-    final theme = Theme.of(context);
-    return PollutionListElemStyle(
-      borderRadius: 20,
-      padding: const EdgeInsets.all(16),
-    );
-  }
 
   @override
   PollutionListElemStyle copyWith({

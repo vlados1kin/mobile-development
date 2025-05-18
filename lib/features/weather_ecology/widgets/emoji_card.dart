@@ -18,23 +18,18 @@ class EmojiCard extends StatelessWidget {
       case Emotion.verySad:
         imageAsset = 'assets/images/svg/very_sad_emotion.svg';
         tintColor = const Color(0xFF9C182C);
-        break;
       case Emotion.sad:
         imageAsset = 'assets/images/svg/sad_emotion.svg';
         tintColor = const Color(0xAF9A571E);
-        break;
       case Emotion.calm:
         imageAsset = 'assets/images/svg/calm_emotion.svg';
         tintColor = const Color(0xCFBB9C02);
-        break;
       case Emotion.happy:
         imageAsset = 'assets/images/svg/happy_emotion.svg';
         tintColor = const Color(0xFF728510);
-        break;
       case Emotion.veryHappy:
         imageAsset = 'assets/images/svg/very_happy_emotion.svg';
         tintColor = const Color(0xFF3E6B30);
-        break;
     }
 
     final theme = Theme.of(context);

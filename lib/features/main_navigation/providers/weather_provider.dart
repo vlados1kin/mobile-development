@@ -262,7 +262,7 @@ class WeatherProvider extends ChangeNotifier {
         ),
         PollutionData(
           element: 'NO2',
-          description: 'Диоксид озота',
+          description: 'Оксид озота',
           value: weather.current.airQuality.no2!,
           level: Level.getNO2Level(weather.current.airQuality.no2!),
         ),
@@ -274,19 +274,19 @@ class WeatherProvider extends ChangeNotifier {
         ),
         PollutionData(
           element: 'SO2',
-          description: 'Диоксид серы',
+          description: 'Оксид серы',
           value: weather.current.airQuality.so2!,
           level: Level.getSO2Level(weather.current.airQuality.so2!),
         ),
         PollutionData(
           element: 'PM2.5',
-          description: 'Мелкие твёрдые частицы',
+          description: 'Мелкие частицы',
           value: weather.current.airQuality.pm25!,
           level: Level.getPM25Level(weather.current.airQuality.pm25!),
         ),
         PollutionData(
           element: 'PM10',
-          description: 'Крупные твёрдые частицы',
+          description: 'Крупные частицы',
           value: weather.current.airQuality.pm10!,
           level: Level.getPM10Level(weather.current.airQuality.pm10!),
         ),

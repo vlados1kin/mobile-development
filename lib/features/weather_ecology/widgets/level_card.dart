@@ -26,23 +26,18 @@ class LevelCard extends StatelessWidget {
       case Level.critical:
         text = 'Критический';
         color = const Color(0xFFDC3545); // Красный
-        break;
       case Level.high:
         text = 'Высокий';
         color = const Color(0xFFFFA500); // Оранжевый
-        break;
       case Level.normal:
         text = 'Нормальный';
         color = const Color(0xFFFFD700); // Жёлтый
-        break;
       case Level.low:
         text = 'Низкий';
         color = const Color(0xFF8BC34A); // Светло-зелёный
-        break;
       case Level.minimal:
         text = 'Минимальный';
         color = const Color(0xFF4CAF50); // Зелёный
-        break;
     }
 
     return Container(
@@ -50,7 +45,7 @@ class LevelCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withOpacity(0.12), // Полупрозрачный цвет
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: color.withOpacity(0.25), width: 1),
+        border: Border.all(color: color.withOpacity(0.25)),
       ),
       child: Center(
         child: Text(

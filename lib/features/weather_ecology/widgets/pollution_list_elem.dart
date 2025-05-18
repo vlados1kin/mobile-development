@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:weather_app/features/weather_ecology/data/data.dart';
 import 'package:weather_app/features/weather_ecology/styles/pollution_list_elem_style.dart';
-import 'package:weather_app/features/weather_ecology/widgets/widgets.dart';
 
 /// Отображает элемент списка с данными об одном загрязнителе,
 /// стилизованный под iOS-подобное "glass" оформление.
